@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
@@ -19,7 +21,12 @@ public class CheckNewDataController{
 
 	}
 	public void toSearch(){
+		ArrayList<String> infoAr = cndM.getCompanysInfo();
+		if(infoAr != null){
 
+		}else{
+			Public.errorShow("記述されたファイルが見つかりません。");
+		}
 	}
 	public void error(String massage){
 		Public.errorShow(massage);
