@@ -1,14 +1,27 @@
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
-public class CheckNewDataController extends MainController{
-	private static CheckNewDataView cdv;
+public class CheckNewDataController{
+	private CheckNewDataView cndV;
+	private CheckNewDataModel cndM;
+
 	public CheckNewDataController(Stage stage) {
-		cdv = new CheckNewDataView(stage);
+		cndV = new CheckNewDataView(stage);
+		cndM = new CheckNewDataModel();
+		cndV.bindModel(cndM);
+
+
+		//更新確認ボタンが押されたら
+		if (cndV.getOptionalButton().isPresent() && cndV.getOptionalButton().get() == ButtonType.OK) {
+			toSearch();
+		}
+
+
 	}
-	public static void toSearch(){
-		new CheckNewDataModel();
+	public void toSearch(){
+
 	}
-	public static void error(String massage){
-		cdv.errorShow(massage);
+	public void error(String massage){
+		Public.errorShow(massage);
 	}
 }

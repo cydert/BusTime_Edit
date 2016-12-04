@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class CheckNewDataModel extends MainController {
+public class CheckNewDataModel{
 	String[] getCompany() {
 		String fileName[] = { "A", "K", "S", "T", "N", "H", "M", "R", "Y", "W" };
 		String filePath = "BusCompany";

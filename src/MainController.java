@@ -1,23 +1,23 @@
-import javafx.application.Application;
+
 import javafx.stage.Stage;
 
-public class MainController extends Application {
-	static Stage stage;
-	@Override
-	public void start(Stage primaryStage) {
-		stage = primaryStage;
-		MainView main = new MainView(primaryStage);
+public class MainController {
+	private MainView mv;
+	private Stage stage;
+	public MainController(Stage stage) {
+		this.stage = stage;
+		mv = new MainView(stage);
+
+
+		mv.getButton(0).setOnAction(e -> toEdit());
+		mv.getButton(1).setOnAction(e -> toCheckNewData());
+	}
+
+	void toEdit(){
 
 	}
 
-	public static void toCheckNewDataView(){
+	void toCheckNewData(){
 		new CheckNewDataController(stage);
-	}
-	public static void toEditView(){
-
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 }
