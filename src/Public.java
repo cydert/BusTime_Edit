@@ -7,5 +7,35 @@ public class Public {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("エラー");
 		alert.setContentText(msg);
+		alert.show();
+	}
+
+	//文字分割
+	public static String cutTwoStringFirst(String text, String cutString){
+		int tmp = text.indexOf(cutString);
+		if(tmp == -1)	return null;
+		return text.substring(0,tmp);
+
+	}
+	public static String cutTwoStringSecond(String text, String cutString){
+		int tmp = text.indexOf(cutString);
+		if(tmp == -1) return null;
+		tmp += cutString.length();
+		return text.substring(tmp);
+
+	}
+	//後ろから
+	public static String cutTwoStringFirstL(String text, String cutString){
+		int tmp = text.lastIndexOf(cutString);
+		if(tmp == -1)	return null;
+		return text.substring(0,tmp);
+
+	}
+	public static String cutTwoStringSecondL(String text, String cutString){
+		int tmp = text.lastIndexOf(cutString);
+		if(tmp == -1) return null;
+		tmp += cutString.length();
+		return text.substring(tmp);
+
 	}
 }

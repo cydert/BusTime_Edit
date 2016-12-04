@@ -21,9 +21,15 @@ public class CheckNewDataController{
 
 	}
 	public void toSearch(){
+		System.out.println("toSerarch");
 		ArrayList<String> infoAr = cndM.getCompanysInfo();
-		if(infoAr != null){
 
+		if(infoAr != null){
+			for(int i=0; i<infoAr.size(); i++){
+				String fileName = infoAr.get(i).split(",")[1];
+				String date = infoAr.get(i).split(",")[3];
+				cndM.checkCompany(fileName, date);
+			}
 		}else{
 			Public.errorShow("記述されたファイルが見つかりません。");
 		}
