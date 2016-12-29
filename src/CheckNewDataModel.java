@@ -9,10 +9,10 @@ public class CheckNewDataModel {
 	BouchoM bcM;
 
 	CheckNewDataModel() {
-		bcM = new BouchoM();
+
 	}
 
-	//会社名一覧　取得
+	// 会社名一覧 取得
 	ArrayList<String> getCompanysInfo() {
 		String fileName[] = { "A", "K", "S", "T", "N", "H", "M", "R", "Y", "W" };
 		String filePath = Public.rootPath + "\\BusCompany";
@@ -27,8 +27,8 @@ public class CheckNewDataModel {
 							new InputStreamReader(new FileInputStream(tmpPath), "unicode"));
 					while ((tmp = bfr.readLine()) != null) {
 						text.add(tmp);
-
 					}
+					bfr.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -41,48 +41,90 @@ public class CheckNewDataModel {
 	}
 
 	void checkCompany(String fileName, String date) {
-		System.out.println("check");
 		switch (fileName) {
 		case "Boucho":
+			bcM = new BouchoM();
 			bcM.serachNewDateList();
+
 			break;
 		}
 
 	}
+}
 
-	// 文字分割
-	String cutTwoStringFirst(String text, String cutString) {
-		int tmp = text.indexOf(cutString);
-		if (tmp == -1)
-			return null;
-		return text.substring(0, tmp);
+class BouchoM {
+	private String topUrl = "http://www.bochobus.co.jp/";
+	private String currentUrl;
+	private String currentHtml;
+	private String[] newDateSt;
+	private String[] newDateUrl;
 
-	}
-
-	String cutTwoStringSecond(String text, String cutString) {
-		int tmp = text.indexOf(cutString);
-		if (tmp == -1)
-			return null;
-		tmp += cutString.length();
-		return text.substring(tmp);
+	BouchoM() {
 
 	}
 
-	// 後ろから
-	String cutTwoStringFirstL(String text, String cutString) {
-		int tmp = text.lastIndexOf(cutString);
-		if (tmp == -1)
-			return null;
-		return text.substring(0, tmp);
+	void serachNewDateList() {
+		currentUrl = topUrl;
+		loadUrl();
+		String tmpHtml = currentHtml;
+		try {
+			tmpHtml = Public.cutTwoStringSecond(tmpHtml, "（Route Bus/TimeTable）");
+			tmpHtml = Public.cutTwoStringFirst(tmpHtml, "\">時刻表/路線図");
+			tmpHtml = Public.cutTwoStringSecondL(tmpHtml, "<a href=\"");
+			if (!tmpHtml.contains("htm"))
+				Public.errorShow("html取得エラー 防長バス BouchoM searchNewDateList\n" + tmpHtml);
+			setCurrentUrl(topUrl + tmpHtml);
+		} catch (NullPointerException e) {
+			// url取得エラー
+			Public.errorShow("null html取得エラー 防長バス BouchoM searchNewDateList");
+			e.printStackTrace();
+			return;
+		}
+		// 時刻表リンク取得完了
+		loadUrl();
 
+		tmpHtml = currentHtml;
+		tmpHtml= Public.cutTwoStringSecond(tmpHtml, "時刻表検索");
+		tmpHtml = Public.cutTwoStringFirst(tmpHtml, "※ＰＤＦファイルです");
+		//tmpHtml内に日付、urlあり
+
+		String[] newDataHtml = tmpHtml.split("改正時刻");
+		if(newDataHtml.length <= 1){
+			//失敗
+			Public.errorShow("BouchoM 防長バスの改正時刻が見つけれません\n" + tmpHtml);
+			return;
+		}else if(newDataHtml.length != 2){
+			//TODO 複数ある
+			Public.errorShow("改正時刻　複数");
+		}else{
+			//1つ
+			newDateSt = new String[1];
+			newDateSt[0] = Public.cutTwoStringSecondL(newDataHtml[0], "<b>");
+			System.out.println("newDataSt:"+newDateSt[0]);
+			//日付取得完了 String
+
+			newDateUrl = new String[1];
+			tmpHtml = Public.cutTwoStringSecond(newDataHtml[0], "<a href=\"");
+			newDateUrl[0] = Public.cutTwoStringFirst(tmpHtml, "\"");
+
+			currentUrl = Public.cutTwoStringFirstL(currentUrl, "/") + "/" +newDateUrl[0];
+			currentUrl = Public.cutTwoStringFirstL(currentUrl, "/") + "/00.htm";
+		}
 	}
 
-	String cutTwoStringSecondL(String text, String cutString) {
-		int tmp = text.lastIndexOf(cutString);
-		if (tmp == -1)
-			return null;
-		tmp += cutString.length();
-		return text.substring(tmp);
+	void loadUrl() {
+		currentHtml = Network.getHtml(currentUrl);
+	}
 
+	void setTopUrl(String url) {
+		topUrl = url;
+	}
+
+	void setCurrentUrl(String url) {
+		currentUrl = url;
+	}
+
+	void setCurrentHtml(String html) {
+		currentHtml = html;
 	}
 }

@@ -38,3 +38,4 @@ public class CheckNewDataController{
 		Public.errorShow(massage);
 	}
 }
+
