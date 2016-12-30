@@ -40,32 +40,33 @@ public class CheckNewDataModel {
 		}
 	}
 
-	void checkCompany(String fileName, String date) {
+	String[][] getCompanyNewDate(String fileName) {
 		switch (fileName) {
 		case "Boucho":
 			bcM = new BouchoM();
-			bcM.serachNewDateList();
-
-			break;
+			return bcM.serachNewDateList();
 		}
-
+		return null;
 	}
+
+	void dlBusTimeList(String url) {
+		if (url.contains("bochobus")) {
+			bcM.getPDF(url);
+		}
+	}
+
 }
 
 class BouchoM {
 	private String topUrl = "http://www.bochobus.co.jp/";
+	private String searchTopUrl;
 	private String currentUrl;
 	private String currentHtml;
-	private String[] newDateSt;
-	private String[] newDateUrl;
+	private String[][] newDate; // String, url
 
 	BouchoM() {
-
-	}
-
-	void serachNewDateList() {
 		currentUrl = topUrl;
-		loadUrl();
+		currentHtml = Network.getHtml(currentUrl);
 		String tmpHtml = currentHtml;
 		try {
 			tmpHtml = Public.cutTwoStringSecond(tmpHtml, "（Route Bus/TimeTable）");
@@ -74,42 +75,43 @@ class BouchoM {
 			if (!tmpHtml.contains("htm"))
 				Public.errorShow("html取得エラー 防長バス BouchoM searchNewDateList\n" + tmpHtml);
 			setCurrentUrl(topUrl + tmpHtml);
+			searchTopUrl = currentUrl;
 		} catch (NullPointerException e) {
 			// url取得エラー
 			Public.errorShow("null html取得エラー 防長バス BouchoM searchNewDateList");
 			e.printStackTrace();
 			return;
 		}
-		// 時刻表リンク取得完了
-		loadUrl();
+		// 時刻表検索画面のURL取得
+	}
 
+	String[][] serachNewDateList() {
+		setCurrentHtml(Network.getHtml(searchTopUrl));
+		String tmpHtml = currentHtml;
 		tmpHtml = currentHtml;
-		tmpHtml= Public.cutTwoStringSecond(tmpHtml, "時刻表検索");
+		tmpHtml = Public.cutTwoStringSecond(tmpHtml, "時刻表検索");
 		tmpHtml = Public.cutTwoStringFirst(tmpHtml, "※ＰＤＦファイルです");
-		//tmpHtml内に日付、urlあり
+		// tmpHtml内に日付、urlあり
 
 		String[] newDataHtml = tmpHtml.split("改正時刻");
-		if(newDataHtml.length <= 1){
-			//失敗
+		if (newDataHtml.length <= 1) {
+			// 失敗
 			Public.errorShow("BouchoM 防長バスの改正時刻が見つけれません\n" + tmpHtml);
-			return;
-		}else if(newDataHtml.length != 2){
-			//TODO 複数ある
-			Public.errorShow("改正時刻　複数");
-		}else{
-			//1つ
-			newDateSt = new String[1];
-			newDateSt[0] = Public.cutTwoStringSecondL(newDataHtml[0], "<b>");
-			System.out.println("newDataSt:"+newDateSt[0]);
-			//日付取得完了 String
+			return null;
+		} else {
+			// TODO 複数ある
+			newDate = new String[newDataHtml.length - 1][2];
 
-			newDateUrl = new String[1];
-			tmpHtml = Public.cutTwoStringSecond(newDataHtml[0], "<a href=\"");
-			newDateUrl[0] = Public.cutTwoStringFirst(tmpHtml, "\"");
+			for (int i = 0; i < newDataHtml.length - 1; i++) {
+				newDate[i][0] = Public.cutTwoStringSecondL(newDataHtml[i], "<b>"); // 改正時刻を取得
 
-			currentUrl = Public.cutTwoStringFirstL(currentUrl, "/") + "/" +newDateUrl[0];
-			currentUrl = Public.cutTwoStringFirstL(currentUrl, "/") + "/00.htm";
+				tmpHtml = Public.cutTwoStringSecond(newDataHtml[i], "<a href=\""); // 改正時刻先のURL
+				newDate[i][1] = Public.cutTwoStringFirst(tmpHtml, "\">");
+				newDate[i][1] = Public.cutTwoStringFirstL(searchTopUrl, "/") + "/" + newDate[i][1];
+				newDate[i][1] = Public.cutTwoStringFirstL(newDate[i][1], "/") + "/00.htm";
+			}
 		}
+		return newDate;
 	}
 
 	void loadUrl() {
@@ -126,5 +128,21 @@ class BouchoM {
 
 	void setCurrentHtml(String html) {
 		currentHtml = html;
+	}
+
+	void getPDF(String url) {
+		currentHtml = Network.getHtml(url);
+		String hostUrl = Public.cutTwoStringFirstL(url, "/") + "/";
+		String dlList[] = currentHtml.split("<a href=\"");
+		String fileName;
+		String tmpUrl;
+		for (int i = 1; i < dlList.length; i++) {
+			tmpUrl = hostUrl + Public.cutTwoStringFirst(dlList[i], "\"");
+			fileName = Public.cutTwoStringSecondL(tmpUrl, "/");
+			if (fileName.contains(".pdf")) {
+				Network.saveFile(tmpUrl, Public.bouchoPdfPath + "\\" + fileName);
+			}
+		}
+		Public.infoShow("DL完了しました");
 	}
 }
