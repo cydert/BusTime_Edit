@@ -21,6 +21,6 @@ public class Main extends Application {
 	}
 
 	void toEdit(){
-
+		new EditController(stage);
 	}
 }
