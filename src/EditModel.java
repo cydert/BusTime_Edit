@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class EditModel {
 	private String path;
+	private String extPath;	//時刻表　抽出元データpath
 
 	// 会社名一覧 取得
 	ArrayList<String> getCompanysInfo() {
@@ -39,6 +40,10 @@ public class EditModel {
 			return null;
 		}
 	}
+	public String[] getExtList(){
+		File file = new File(extPath);
+		return file.list();
+	}
 
 	public void setPath(String path) {
 		this.path = path;
@@ -66,4 +71,13 @@ public class EditModel {
 		}
 	}
 
+	public void setInfo(){
+		if(path != null){
+
+		}
+	}
+
+	public void setExtPath(String path){
+		this.extPath = path;
+	}
 }

@@ -11,8 +11,9 @@ public class EditController {
 	private ListView<String> listV;
 	public EditController(Stage stage) {
 		this.stage = stage;
-		view = new EditView(stage);
 		model = new EditModel();
+		view = new EditView(stage,model);
+
 		listV = view.showList(model.getCompanysInfo());
 		listV.setOnMouseClicked(e -> select(e,listV));
 	}
@@ -25,8 +26,11 @@ public class EditController {
 			String item = list.getSelectionModel().getSelectedItem();
 			if(item.contains("Boucho")){
 				model.setPath(Public.rootPath + "\\Boucho");
-				model.check();
+				model.check();	//ファイルが正常にあるか
+				model.setExtPath(Public.bouchoPdfPath);
+				model.setInfo();
 				view.showView();
+				view.showExtMode();
 			}
 			view.closeListV(); // Window閉じる
 		}
