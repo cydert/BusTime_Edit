@@ -27,23 +27,24 @@ public class EditView {
 	private EditModel model;
 	private BorderPane root;
 	private GridPane centerGrid;
-	private BorderPane bottomGrid;
+	private BorderPane bottomBorder;
 
 	private TextArea[] txArea;
 	private Button[] button;
 	private MenuBar menuBar;
 	private Button[] extButton;
+	private ComboBox<String> extListBox;
 
 	EditView(Stage stage, EditModel model) {
 		this.stage = stage;
 		this.model = model;
 	}
 
-	public void showView(){
+	public void showView() {
 		root = new BorderPane();
 		HBox topBox = new HBox();
 		centerGrid = new GridPane();
-		bottomGrid = new BorderPane();
+		bottomBorder = new BorderPane();
 		int gridI = 0;
 
 		menuBar = new MenuBar();
@@ -61,7 +62,6 @@ public class EditView {
 		item[1][2] = new MenuItem("式の作成");
 		item[1][3] = new MenuItem("式の編集");
 
-
 		topBox.setAlignment(Pos.CENTER);
 		topBox.setSpacing(10);
 		TextField busNameTx = new TextField();
@@ -78,28 +78,31 @@ public class EditView {
 		}
 		gridI += 2;
 
-
-
-		button = new Button[2];	//TODO
+		button = new Button[2]; // TODO
+		button[1] = new Button("保存");
+		BorderPane bottomGrid = new BorderPane();
+		// bottomGrid.setLeft(button[0]);
+		bottomGrid.setRight(button[1]);
+		bottomBorder.setBottom(bottomGrid);
 
 		root.setTop(topBox);
 		root.setCenter(centerGrid);
-		root.setBottom(bottomGrid);
+		root.setBottom(bottomBorder);
 		stage.setScene(new Scene(root));
 	}
 
-	public void showExtMode(){
+	public void showExtMode() {
 		extButton = new Button[3];
 		extButton[0] = new Button("←");
 		extButton[1] = new Button("→");
 		extButton[2] = new Button("抽出");
 
-		ComboBox<String> listBox = new ComboBox<>();
-		listBox.getItems().addAll(model.getExtList());
+		extListBox = new ComboBox<>();
+		extListBox.getItems().addAll(model.getExtList());
 		HBox topBox = new HBox();
 		topBox.setAlignment(Pos.CENTER);
-		topBox.getChildren().addAll(extButton[0],listBox,extButton[1]);
-		bottomGrid.setTop(topBox);
+		topBox.getChildren().addAll(extButton[0], extListBox, extButton[1], extButton[2]);
+		bottomBorder.setTop(topBox);
 	}
 
 	public ListView<String> showList(ArrayList<String> itemList) {
@@ -124,7 +127,15 @@ public class EditView {
 		listView.setItems(list);
 		return listView;
 	}
-	public void closeListV(){
+
+	public Button[] getExtButton(){
+		return extButton;
+	}
+	public ComboBox<String> getExtListBox(){
+		return extListBox;
+	}
+
+	public void closeListV() {
 		listStage.hide();
 	}
 }

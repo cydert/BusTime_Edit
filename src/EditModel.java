@@ -11,7 +11,9 @@ import java.util.ArrayList;
 
 public class EditModel {
 	private String path;
-	private String extPath;	//時刻表　抽出元データpath
+	private String extPath;	//時刻表　抽出元データpat
+	private char fileFirstChar;
+	
 
 	// 会社名一覧 取得
 	ArrayList<String> getCompanysInfo() {

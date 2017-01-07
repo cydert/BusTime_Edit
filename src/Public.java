@@ -3,7 +3,7 @@ import javafx.scene.control.Alert.AlertType;
 
 public class Public {
 	public static String rootPath = "data";
-	public static String bouchoPdfPath = "data\\Boucho\\BouchoPDF";
+	public static String bouchoPdfPath = rootPath+"\\Boucho\\BouchoPDF";
 	public static String dataDirName = "BusTime";
 	public static String nameListDirName = "Name_list";
 	public static void errorShow(String msg) {
