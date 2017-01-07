@@ -6,6 +6,7 @@ public class Public {
 	public static String bouchoPdfPath = rootPath+"\\Boucho\\BouchoPDF";
 	public static String dataDirName = "BusTime";
 	public static String nameListDirName = "Name_list";
+	public static String[] gyou ={ "A", "K", "S", "T", "N", "H", "M", "R", "Y", "W"};
 	public static void errorShow(String msg) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("エラー");

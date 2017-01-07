@@ -36,7 +36,7 @@ public class EditController {
 				view.getExtButton()[0].setOnAction(ev -> changeNextBox(false));
 				view.getExtButton()[1].setOnAction(ev -> changeNextBox(true));
 				view.getExtButton()[2].setOnAction(ev -> extruct());
-
+				view.getBottomButton()[1].setOnAction(ev -> save());
 			}
 			view.closeListV(); // Window閉じる
 		}
@@ -48,9 +48,9 @@ public class EditController {
 		if (selectId == -1)
 			return;
 		String[] exList = model.getExtList();
-		
+
 		String filePath = Public.bouchoPdfPath + "\\" + exList[selectId];
-		
+
 
 	}
 
@@ -62,5 +62,9 @@ public class EditController {
 		else
 			index--;
 		tmpBox.getSelectionModel().select(index);
+	}
+
+	private void save(){
+		view.saveView();
 	}
 }

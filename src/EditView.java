@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -26,6 +27,7 @@ public class EditView {
 	private Stage listStage;
 	private EditModel model;
 	private BorderPane root;
+	private VBox centerBox;
 	private GridPane centerGrid;
 	private BorderPane bottomBorder;
 
@@ -44,6 +46,7 @@ public class EditView {
 		root = new BorderPane();
 		HBox topBox = new HBox();
 		centerGrid = new GridPane();
+		centerBox = new VBox();
 		bottomBorder = new BorderPane();
 		int gridI = 0;
 
@@ -69,7 +72,7 @@ public class EditView {
 
 		String[] listSt = { "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)" };
 		Label[] txF = new Label[listSt.length];
-		txArea = new TextArea[listSt.length]; // 入力欄
+		txArea = new TextArea[listSt.length+1]; // 入力欄
 		for (int i = 0; i < listSt.length; i++) {
 			txF[i] = new Label(listSt[i]);
 			centerGrid.add(txF[i], i, gridI);
@@ -78,15 +81,26 @@ public class EditView {
 		}
 		gridI += 2;
 
+		int txAreaI = listSt.length;
+		txArea[txAreaI] = new TextArea();
+		txArea[txAreaI].setPrefHeight(60);
+		HBox howInfoBox = new HBox();
+		howInfoBox.setSpacing(20);
+		howInfoBox.getChildren().add(new Label("特殊運行情報"));
+		howInfoBox.getChildren().add(txArea[txAreaI]);
+		centerBox.getChildren().addAll(centerGrid,howInfoBox);
+		txAreaI++;
+
 		button = new Button[2]; // TODO
+		button[0] = new Button("画面クリア");
 		button[1] = new Button("保存");
 		BorderPane bottomGrid = new BorderPane();
-		// bottomGrid.setLeft(button[0]);
+		bottomGrid.setLeft(button[0]);
 		bottomGrid.setRight(button[1]);
 		bottomBorder.setBottom(bottomGrid);
 
 		root.setTop(topBox);
-		root.setCenter(centerGrid);
+		root.setCenter(centerBox);
 		root.setBottom(bottomBorder);
 		stage.setScene(new Scene(root));
 	}
@@ -126,6 +140,58 @@ public class EditView {
 		ObservableList<String> list = FXCollections.observableArrayList(itemList);// 一覧内容
 		listView.setItems(list);
 		return listView;
+	}
+
+	public void saveView(){
+		Stage stage = new Stage();
+		stage.setWidth(700);
+		stage.setHeight(400);
+		stage.setTitle("保存");
+		stage.initModality(Modality.APPLICATION_MODAL);// 他画面選択不可
+		stage.show();
+
+		Button saveBt = new Button("保存");
+		BorderPane root = new BorderPane();
+		VBox centerBox = new VBox();
+		GridPane gdp = new GridPane();
+		gdp.setAlignment(Pos.CENTER);
+		int gdpIndex = 0;
+
+
+		String[] txHint = {"","数字のみ,行先が複数ある場合のみ入力", "行き先が複数ある時のみ入力", ""};
+		String[] txLabel = {"更新日","行先番号","行き先", "ファイル名"};
+		TextField[] fileInfoTx = new TextField[txLabel.length];	//行先番号,行先,ファイル名
+		Label[] label = new Label[txLabel.length];
+		for(int i=0; i<fileInfoTx.length; i++){
+			label[i] = new Label(txLabel[i]);
+			label[i].setAlignment(Pos.CENTER);
+			gdp.add(label[i], 0, i);
+			fileInfoTx[i] = new TextField();
+			fileInfoTx[i].setPromptText(txHint[i]);//hint
+			gdp.add(fileInfoTx[i], 1, i);
+			gdpIndex++;
+		}
+		ChoiceBox<String> gyouBox = new ChoiceBox<>();
+		gyouBox.getItems().addAll(Public.gyou);
+		gdp.add(new Label("行"), 0, gdpIndex);
+		gdp.add(gyouBox, 1, gdpIndex);
+		gdpIndex++;
+		ChoiceBox<String> chBox = new ChoiceBox<>();	//曜日選択
+		chBox.getItems().addAll(new String[]{"平日","土曜","日曜","土日"});
+		gdp.add(new Label("曜日選択"), 0, gdpIndex);
+		gdp.add(chBox, 1, gdpIndex);
+
+		centerBox.getChildren().add(gdp);
+		BorderPane.setAlignment(centerBox, Pos.CENTER);
+		BorderPane.setAlignment(saveBt, Pos.BOTTOM_CENTER);
+		root.setCenter(centerBox);
+		root.setBottom(saveBt);
+
+		stage.setScene(new Scene(root));
+	}
+	public Button[] getBottomButton(){
+		return button;
+		//画面クリア, 保存
 	}
 
 	public Button[] getExtButton(){
