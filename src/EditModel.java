@@ -10,10 +10,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
 public class EditModel {
 	private String path;
 	private String extPath; // 時刻表 抽出元データpat
 	private SaveInfo saveInfo;
+	private EditData ed;
 
 	// 会社名一覧 取得
 	ArrayList<String> getCompanysInfo() {
@@ -55,6 +59,9 @@ public class EditModel {
 	public String getPath() {
 		return path;
 	}
+	public EditData getEditData(){
+		return ed;
+	}
 
 	public void setPath(String path) {
 		this.path = path;
@@ -80,6 +87,55 @@ public class EditModel {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public boolean extruct(String filePath){
+		ed = new EditData();
+		saveInfo = new SaveInfo();
+		try {
+			FileInputStream pdfStream = new FileInputStream(filePath);
+			PDDocument pdf = PDDocument.load(pdfStream);
+			PDFTextStripper stripper = new PDFTextStripper();
+			String text = stripper.getText(pdf);
+			System.out.println(text);
+
+			int page = pdf.getNumberOfPages();
+			String[] textAr = text.split("\r\n");
+
+			boolean isRead = false;
+			for(int i=0; i<textAr.length; i++){
+				if(!isRead){
+					if(textAr[i].contains("日改正")){
+						isRead = true;
+						String tmp = Public.cutTwoStringFirstL(textAr[i], "改正");
+						saveInfo.newDay = Public.cutTwoStringSecondL(tmp, " ");
+					}
+				}else{
+					String tmp;
+					if(textAr[i].contains(":")){//取り込むデータなら
+						tmp = Public.cutTwoStringFirst(textAr[i], " ");	//時刻か注意マーク取り出し
+						if(!Public.isNumber(tmp.charAt(0)+"")){//注意マークあるなら
+							ed.special += tmp.charAt(0)+"\n";
+							tmp = Public.cutTwoStringSecond(textAr[i], tmp+" ");	//時刻以降取り出し
+						}else{
+							tmp = textAr[i];//時刻以降
+							ed.special += "\n";
+						}
+						ed.hour += Public.cutTwoStringFirst(tmp, ":") + "\n";
+						ed.min += Public.cutTwoStringFirst(Public.cutTwoStringSecond(tmp, ":"), " ") + "\n";
+						tmp = Public.cutTwoStringSecond(tmp, " ");
+						ed.end += Public.cutTwoStringSecondL(tmp, " ")+ "\n";	//目的地
+						tmp = Public.cutTwoStringFirstL(tmp, " ");
+						tmp = tmp.replaceAll(" ", "・");
+						ed.via += tmp+"\n";
+					}
+				}
+			}
+			return isRead;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -149,7 +205,6 @@ public class EditModel {
 				Files.WriteData(dataPath, oldData.toArray(new String[oldData.size()]));	//書き込み
 				return;
 			}
-			// TODO 場所探索し入れる場所 oldDataにadd
 		}
 		//データなし
 		int index = binarySearch2Mode(oldData, svi.fileName);	//2分探索
@@ -191,4 +246,13 @@ class SaveInfo {
 		gyou = 0;
 		youbi = 0;
 	}
+}
+//"時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
+class EditData{
+	public String hour="";
+	public String min="";
+	public String via="";
+	public String end="";
+	public String stand="";
+	public String special="";
 }

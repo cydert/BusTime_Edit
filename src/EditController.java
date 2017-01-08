@@ -1,3 +1,7 @@
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
@@ -43,6 +47,7 @@ public class EditController {
 	}
 
 	private void extruct() {
+
 		ComboBox<String> box = view.getExtListBox();
 		int selectId = box.getSelectionModel().getSelectedIndex();
 		if (selectId == -1)
@@ -50,7 +55,16 @@ public class EditController {
 		String[] exList = model.getExtList();
 
 		String filePath = Public.bouchoPdfPath + "\\" + exList[selectId];
-
+		if( model.extruct(filePath) ){
+			//ファイル展開成功か
+			view.showModelData();
+		}
+		Desktop desktop = Desktop.getDesktop();
+		try {
+			desktop.open(new File(filePath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -64,26 +78,28 @@ public class EditController {
 		tmpBox.getSelectionModel().select(index);
 	}
 
-	private void save(){
+	private void save() {
 		view.saveView();
 		view.getWriteSaveBt().setOnAction(ev -> writeSave());
 	}
-	private void writeSave(){
+
+	private void writeSave() {
 		SaveInfo svi = view.getSaveInfo();
 		String nameListPath = model.getPath() + "\\" + Public.nameListDirName + "\\" + svi.gyou + ".txt";
-		String[] option = {"",""};
-		if(!svi.toIndex.equals("")){
+		String[] option = { "", "" };
+		if (!svi.toIndex.equals("")) {
 			option[0] = svi.toIndex + "_";
 		}
-		if(svi.youbi > 0)	option[1] = "_"+svi.youbi;
-		String busTimeDataPath = model.getPath() + "\\" + Public.dataDirName + "\\"
-				+ option[0]+svi.fileName +option[1]+ ".csv";
+		if (svi.youbi > 0)
+			option[1] = "_" + svi.youbi;
+		String busTimeDataPath = model.getPath() + "\\" + Public.dataDirName + "\\" + option[0] + svi.fileName
+				+ option[1] + ".csv";
 
 		String[] data = model.makeBusTimeData(view.getTextArea());
-		Files.WriteData(busTimeDataPath, data);		//ファイル書き込み
+		Files.WriteData(busTimeDataPath, data); // ファイル書き込み
 		String tmp = model.makeBusTimeDataOption(view.getOptionData());
-		Files.WriteDataAdd(busTimeDataPath, tmp);	//特殊運行の追記
-		Files.WriteDataAdd(busTimeDataPath, "/i,"+svi.newDay);	//更新日の追記
+		Files.WriteDataAdd(busTimeDataPath, tmp); // 特殊運行の追記
+		Files.WriteDataAdd(busTimeDataPath, "/i," + svi.newDay); // 更新日の追記
 		model.writeNameListData(Files.readData(nameListPath), svi, view.getShowBusStopName(), nameListPath);
 	}
 }

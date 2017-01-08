@@ -31,7 +31,7 @@ public class EditView {
 	private GridPane centerGrid;
 	private BorderPane bottomBorder;
 
-	private TextArea[] txArea;
+	private TextArea[] txArea;//"時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
 	private TextArea specialArea;
 	private Button[] button;
 	private MenuBar menuBar;
@@ -121,6 +121,14 @@ public class EditView {
 		topBox.setAlignment(Pos.CENTER);
 		topBox.getChildren().addAll(extButton[0], extListBox, extButton[1], extButton[2]);
 		bottomBorder.setTop(topBox);
+	}
+	public void showModelData(){
+		txArea[0].setText(model.getEditData().hour);
+		txArea[1].setText(model.getEditData().min);
+		txArea[2].setText(model.getEditData().via);
+		txArea[3].setText(model.getEditData().end);
+		txArea[4].setText(model.getEditData().stand);
+		txArea[5].setText(model.getEditData().special);
 	}
 
 	public ListView<String> showList(ArrayList<String> itemList) {
