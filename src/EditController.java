@@ -81,6 +81,9 @@ public class EditController {
 
 		String[] data = model.makeBusTimeData(view.getTextArea());
 		Files.WriteData(busTimeDataPath, data);		//ファイル書き込み
-		
+		String tmp = model.makeBusTimeDataOption(view.getOptionData());
+		Files.WriteDataAdd(busTimeDataPath, tmp);	//特殊運行の追記
+		Files.WriteDataAdd(busTimeDataPath, "/i,"+svi.newDay);	//更新日の追記
+		model.writeNameListData(Files.readData(nameListPath), svi, view.getShowBusStopName(), nameListPath);
 	}
 }

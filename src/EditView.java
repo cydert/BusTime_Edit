@@ -36,8 +36,9 @@ public class EditView {
 	private Button[] button;
 	private MenuBar menuBar;
 	private Button[] extButton;
-	private Button saveBt;//ファイル生成ボタン
-	private TextField[] saveFileInfoTx;	// 更新日,行先番号,行先,ファイル名
+	private Button saveBt;// ファイル生成ボタン
+	private TextField busNameTx;
+	private TextField[] saveFileInfoTx; // 更新日,行先番号,行先,ファイル名
 	private ChoiceBox<String> saveGyouBox;
 	private ChoiceBox<String> saveChBox;
 	private ComboBox<String> extListBox;
@@ -72,7 +73,7 @@ public class EditView {
 
 		topBox.setAlignment(Pos.CENTER);
 		topBox.setSpacing(10);
-		TextField busNameTx = new TextField();
+		busNameTx = new TextField();
 		topBox.getChildren().addAll(new Label("表示バス停名:"), busNameTx);
 
 		String[] listSt = { "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)" };
@@ -85,7 +86,6 @@ public class EditView {
 			centerGrid.add(txArea[i], i, gridI + 1);
 		}
 		gridI += 2;
-
 
 		specialArea = new TextArea();
 		specialArea.setPrefHeight(60);
@@ -154,7 +154,7 @@ public class EditView {
 		stage.initModality(Modality.APPLICATION_MODAL);// 他画面選択不可
 		stage.show();
 
-		SaveInfo svi = model.getSaveInfo();	//設定済みの内容取得
+		SaveInfo svi = model.getSaveInfo(); // 設定済みの内容取得
 		saveBt = new Button("保存");
 		BorderPane root = new BorderPane();
 		VBox centerBox = new VBox();
@@ -195,9 +195,9 @@ public class EditView {
 				}
 			}
 		}
-		saveGyouBox = new ChoiceBox<>();	//行, A,K,S,T,N
+		saveGyouBox = new ChoiceBox<>(); // 行, A,K,S,T,N
 		saveGyouBox.getItems().addAll(Public.gyouS);
-		if (svi != null && svi.gyou != 0)//指定あれば
+		if (svi != null && svi.gyou != 0)// 指定あれば
 			saveGyouBox.getSelectionModel().select(Public.searchIndex(Public.gyouC, svi.gyou));
 		gdp.add(new Label("行"), 0, gdpIndex);
 		gdp.add(saveGyouBox, 1, gdpIndex);
@@ -205,7 +205,7 @@ public class EditView {
 		saveChBox = new ChoiceBox<>(); // 曜日選択
 		String[] youbi = { "平日", "土曜", "日曜", "土日" };
 		saveChBox.getItems().addAll(youbi);
-		if(svi !=null && svi.youbi != -1)//指定あれば
+		if (svi != null && svi.youbi != -1)// 指定あれば
 			saveChBox.getSelectionModel().select(Public.searchIndex(youbi, youbi[svi.youbi]));
 		gdp.add(new Label("曜日選択"), 0, gdpIndex);
 		gdp.add(saveChBox, 1, gdpIndex);
@@ -231,11 +231,12 @@ public class EditView {
 	public ComboBox<String> getExtListBox() {
 		return extListBox;
 	}
-	public Button getWriteSaveBt(){
+
+	public Button getWriteSaveBt() {
 		return saveBt;
 	}
 
-	public SaveInfo getSaveInfo(){
+	public SaveInfo getSaveInfo() {
 		SaveInfo sviTmp = new SaveInfo();// 更新日,行先番号,行先,ファイル名
 		sviTmp.newDay = saveFileInfoTx[0].getText();
 		sviTmp.toIndex = saveFileInfoTx[1].getText();
@@ -246,15 +247,21 @@ public class EditView {
 		return sviTmp;
 	}
 
-	public String[] getTextArea(){
-		//"時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
-		String[] ar = new String[txArea.length-1];
-		for(int i=0; i<txArea.length-1; i++){
+	public String[] getTextArea() {
+		// "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
+		String[] ar = new String[txArea.length - 1];
+		for (int i = 0; i < txArea.length - 1; i++) {
 			ar[i] = txArea[i].getText();
 		}
 		return ar;
 	}
 
+	public String getOptionData() {
+		return specialArea.getText();
+	}
+	public String getShowBusStopName(){
+		return busNameTx.getText();
+	}
 
 	public void closeListV() {
 		listStage.hide();
