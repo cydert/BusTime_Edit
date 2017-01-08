@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class EditModel {
 	private String path;
 	private String extPath;	//時刻表　抽出元データpat
-	private char fileFirstChar;
-	
+	private SaveInfo saveInfo;
+
 
 	// 会社名一覧 取得
 	ArrayList<String> getCompanysInfo() {
@@ -47,8 +47,16 @@ public class EditModel {
 		return file.list();
 	}
 
+	public SaveInfo getSaveInfo(){
+		return saveInfo;
+	}
+	public String getPath(){
+		return path;
+	}
+
 	public void setPath(String path) {
 		this.path = path;
+		System.out.println(path);
 	}
 
 	public void check() {
@@ -81,5 +89,41 @@ public class EditModel {
 
 	public void setExtPath(String path){
 		this.extPath = path;
+	}
+
+	public String[] makeBusTimeData(String[] ar){
+		String spAr[] = ar[0].split("\n",-1);
+		int cnt = spAr.length;	//行数
+		if(spAr[spAr.length-1].equals(""))	cnt--;	//無駄な改行があれば引く
+		String[] tmp = new String[cnt];
+		for(int i=0; i<ar.length; i++){
+			if(i != 0)
+				spAr = ar[i].split("\n",-1);
+			for(int j=0; j<cnt; j++){
+				if(i==0){
+					tmp[j] = spAr[j];
+				}else{
+					tmp[j] += ","+spAr[j];
+				}
+			}
+		}
+		return tmp;
+	}
+}
+
+class SaveInfo{
+	public String newDay;
+	public String toIndex;
+	public String toString;
+	public String fileName;
+	public char gyou;
+	public int youbi;//(0を平日),1が土曜,2が日曜,3が土日
+	void clear(){
+		newDay = null;
+		toIndex = null;
+		toString = null;
+		fileName = null;
+		gyou = 0;
+		youbi = 0;
 	}
 }

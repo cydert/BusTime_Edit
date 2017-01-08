@@ -6,7 +6,8 @@ public class Public {
 	public static String bouchoPdfPath = rootPath+"\\Boucho\\BouchoPDF";
 	public static String dataDirName = "BusTime";
 	public static String nameListDirName = "Name_list";
-	public static String[] gyou ={ "A", "K", "S", "T", "N", "H", "M", "R", "Y", "W"};
+	public static String[] gyouS ={ "A", "K", "S", "T", "N", "H", "M", "R", "Y", "W"};
+	public static char[] gyouC ={ 'A', 'K', 'S', 'T', 'N', 'H', 'M', 'R', 'Y', 'W'};
 	public static void errorShow(String msg) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("エラー");
@@ -47,5 +48,22 @@ public class Public {
 		tmp += cutString.length();
 		return text.substring(tmp);
 
+	}
+
+	public static int searchIndex(char[] list,char c){
+		for(int i=0;i<list.length; i++){
+			if(list[i] == c){
+				return i;
+			}
+		}
+		return -1;
+	}
+	public static int searchIndex(String[] list,String s){
+		for(int i=0;i<list.length; i++){
+			if(list[i].equals(s)){
+				return i;
+			}
+		}
+		return -1;
 	}
 }

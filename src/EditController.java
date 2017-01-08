@@ -66,5 +66,21 @@ public class EditController {
 
 	private void save(){
 		view.saveView();
+		view.getWriteSaveBt().setOnAction(ev -> writeSave());
+	}
+	private void writeSave(){
+		SaveInfo svi = view.getSaveInfo();
+		String nameListPath = model.getPath() + "\\" + Public.nameListDirName + "\\" + svi.gyou + ".txt";
+		String[] option = {"",""};
+		if(!svi.toIndex.equals("")){
+			option[0] = svi.toIndex + "_";
+		}
+		if(svi.youbi > 0)	option[1] = "_"+svi.youbi;
+		String busTimeDataPath = model.getPath() + "\\" + Public.dataDirName + "\\"
+				+ option[0]+svi.fileName +option[1]+ ".csv";
+
+		String[] data = model.makeBusTimeData(view.getTextArea());
+		Files.WriteData(busTimeDataPath, data);		//ファイル書き込み
+		
 	}
 }

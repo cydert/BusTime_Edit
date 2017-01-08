@@ -32,9 +32,14 @@ public class EditView {
 	private BorderPane bottomBorder;
 
 	private TextArea[] txArea;
+	private TextArea specialArea;
 	private Button[] button;
 	private MenuBar menuBar;
 	private Button[] extButton;
+	private Button saveBt;//ファイル生成ボタン
+	private TextField[] saveFileInfoTx;	// 更新日,行先番号,行先,ファイル名
+	private ChoiceBox<String> saveGyouBox;
+	private ChoiceBox<String> saveChBox;
 	private ComboBox<String> extListBox;
 
 	EditView(Stage stage, EditModel model) {
@@ -72,7 +77,7 @@ public class EditView {
 
 		String[] listSt = { "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)" };
 		Label[] txF = new Label[listSt.length];
-		txArea = new TextArea[listSt.length+1]; // 入力欄
+		txArea = new TextArea[listSt.length + 1]; // 入力欄
 		for (int i = 0; i < listSt.length; i++) {
 			txF[i] = new Label(listSt[i]);
 			centerGrid.add(txF[i], i, gridI);
@@ -81,17 +86,16 @@ public class EditView {
 		}
 		gridI += 2;
 
-		int txAreaI = listSt.length;
-		txArea[txAreaI] = new TextArea();
-		txArea[txAreaI].setPrefHeight(60);
+
+		specialArea = new TextArea();
+		specialArea.setPrefHeight(60);
 		HBox howInfoBox = new HBox();
 		howInfoBox.setSpacing(20);
 		howInfoBox.getChildren().add(new Label("特殊運行情報"));
-		howInfoBox.getChildren().add(txArea[txAreaI]);
-		centerBox.getChildren().addAll(centerGrid,howInfoBox);
-		txAreaI++;
+		howInfoBox.getChildren().add(specialArea);
+		centerBox.getChildren().addAll(centerGrid, howInfoBox);
 
-		button = new Button[2]; // TODO
+		button = new Button[2];
 		button[0] = new Button("画面クリア");
 		button[1] = new Button("保存");
 		BorderPane bottomGrid = new BorderPane();
@@ -142,7 +146,7 @@ public class EditView {
 		return listView;
 	}
 
-	public void saveView(){
+	public void saveView() {
 		Stage stage = new Stage();
 		stage.setWidth(700);
 		stage.setHeight(400);
@@ -150,36 +154,61 @@ public class EditView {
 		stage.initModality(Modality.APPLICATION_MODAL);// 他画面選択不可
 		stage.show();
 
-		Button saveBt = new Button("保存");
+		SaveInfo svi = model.getSaveInfo();	//設定済みの内容取得
+		saveBt = new Button("保存");
 		BorderPane root = new BorderPane();
 		VBox centerBox = new VBox();
 		GridPane gdp = new GridPane();
 		gdp.setAlignment(Pos.CENTER);
 		int gdpIndex = 0;
 
-
-		String[] txHint = {"","数字のみ,行先が複数ある場合のみ入力", "行き先が複数ある時のみ入力", ""};
-		String[] txLabel = {"更新日","行先番号","行き先", "ファイル名"};
-		TextField[] fileInfoTx = new TextField[txLabel.length];	//行先番号,行先,ファイル名
+		String[] txHint = { "", "数字のみ,行先が複数ある場合のみ入力", "行き先が複数ある時のみ入力", "" };
+		String[] txLabel = { "更新日", "行先番号", "行き先", "ファイル名" };
+		saveFileInfoTx = new TextField[txLabel.length]; // 更新日,行先番号,行先,ファイル名
 		Label[] label = new Label[txLabel.length];
-		for(int i=0; i<fileInfoTx.length; i++){
+		for (int i = 0; i < saveFileInfoTx.length; i++) {
 			label[i] = new Label(txLabel[i]);
 			label[i].setAlignment(Pos.CENTER);
 			gdp.add(label[i], 0, i);
-			fileInfoTx[i] = new TextField();
-			fileInfoTx[i].setPromptText(txHint[i]);//hint
-			gdp.add(fileInfoTx[i], 1, i);
+			saveFileInfoTx[i] = new TextField();
+			saveFileInfoTx[i].setPromptText(txHint[i]);// hint
+			gdp.add(saveFileInfoTx[i], 1, i);
 			gdpIndex++;
+			if (svi != null) { // 既に指定があれば
+				switch (i) {
+				case 1:
+					if (svi.newDay != null)
+						saveFileInfoTx[i].setText(svi.newDay);
+					break;
+				case 2:
+					if (svi.toIndex != null)
+						saveFileInfoTx[i].setText("" + svi.toIndex);
+					break;
+				case 3:
+					if (svi.toString != null)
+						saveFileInfoTx[i].setText(svi.toString);
+					break;
+				case 4:
+					if (svi.fileName != null)
+						saveFileInfoTx[i].setText(svi.fileName);
+					break;
+				}
+			}
 		}
-		ChoiceBox<String> gyouBox = new ChoiceBox<>();
-		gyouBox.getItems().addAll(Public.gyou);
+		saveGyouBox = new ChoiceBox<>();	//行, A,K,S,T,N
+		saveGyouBox.getItems().addAll(Public.gyouS);
+		if (svi != null && svi.gyou != 0)//指定あれば
+			saveGyouBox.getSelectionModel().select(Public.searchIndex(Public.gyouC, svi.gyou));
 		gdp.add(new Label("行"), 0, gdpIndex);
-		gdp.add(gyouBox, 1, gdpIndex);
+		gdp.add(saveGyouBox, 1, gdpIndex);
 		gdpIndex++;
-		ChoiceBox<String> chBox = new ChoiceBox<>();	//曜日選択
-		chBox.getItems().addAll(new String[]{"平日","土曜","日曜","土日"});
+		saveChBox = new ChoiceBox<>(); // 曜日選択
+		String[] youbi = { "平日", "土曜", "日曜", "土日" };
+		saveChBox.getItems().addAll(youbi);
+		if(svi !=null && svi.youbi != -1)//指定あれば
+			saveChBox.getSelectionModel().select(Public.searchIndex(youbi, youbi[svi.youbi]));
 		gdp.add(new Label("曜日選択"), 0, gdpIndex);
-		gdp.add(chBox, 1, gdpIndex);
+		gdp.add(saveChBox, 1, gdpIndex);
 
 		centerBox.getChildren().add(gdp);
 		BorderPane.setAlignment(centerBox, Pos.CENTER);
@@ -189,17 +218,43 @@ public class EditView {
 
 		stage.setScene(new Scene(root));
 	}
-	public Button[] getBottomButton(){
+
+	public Button[] getBottomButton() {
 		return button;
-		//画面クリア, 保存
+		// 画面クリア, 保存
 	}
 
-	public Button[] getExtButton(){
+	public Button[] getExtButton() {
 		return extButton;
 	}
-	public ComboBox<String> getExtListBox(){
+
+	public ComboBox<String> getExtListBox() {
 		return extListBox;
 	}
+	public Button getWriteSaveBt(){
+		return saveBt;
+	}
+
+	public SaveInfo getSaveInfo(){
+		SaveInfo sviTmp = new SaveInfo();// 更新日,行先番号,行先,ファイル名
+		sviTmp.newDay = saveFileInfoTx[0].getText();
+		sviTmp.toIndex = saveFileInfoTx[1].getText();
+		sviTmp.toString = saveFileInfoTx[2].getText();
+		sviTmp.fileName = saveFileInfoTx[3].getText();
+		sviTmp.gyou = saveGyouBox.getSelectionModel().getSelectedItem().charAt(0);
+		sviTmp.youbi = saveChBox.getSelectionModel().getSelectedIndex();
+		return sviTmp;
+	}
+
+	public String[] getTextArea(){
+		//"時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
+		String[] ar = new String[txArea.length-1];
+		for(int i=0; i<txArea.length-1; i++){
+			ar[i] = txArea[i].getText();
+		}
+		return ar;
+	}
+
 
 	public void closeListV() {
 		listStage.hide();
