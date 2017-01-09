@@ -65,7 +65,6 @@ public class EditModel {
 
 	public void setPath(String path) {
 		this.path = path;
-		System.out.println(path);
 	}
 
 	public void check() {
@@ -106,7 +105,6 @@ public class EditModel {
 			PDDocument pdf = PDDocument.load(pdfStream);
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdf);
-			System.out.println(text);
 
 			int page = pdf.getNumberOfPages();
 			String[] textAr = text.split("\r\n");
@@ -135,6 +133,7 @@ public class EditModel {
 						tmp = Public.cutTwoStringSecond(tmp, " ");
 						ed.end += Public.cutTwoStringSecondL(tmp, " ")+ "\n";	//目的地
 						tmp = Public.cutTwoStringFirstL(tmp, " ");
+						tmp = tmp.replaceAll("\\) ", ")");
 						tmp = tmp.replaceAll(" ", "・");
 						if(tmp == "" || tmp == " ")	tmp = "不明";
 						ed.via += tmp+"\n";	//経由地
@@ -158,6 +157,10 @@ public class EditModel {
 
 	public void setExtPath(String path) {
 		this.extPath = path;
+	}
+
+	public void setEditData(EditData ed){
+		this.ed = ed;
 	}
 
 	public String[] makeBusTimeData(String[] ar) {

@@ -54,7 +54,6 @@ public class Public {
 	}
 
 	public static String cutTwoStringSecondL(String text, String cutString) {
-		System.out.println(text + cutString);
 		int tmp = text.lastIndexOf(cutString);
 		if (tmp == -1) {
 			return text;

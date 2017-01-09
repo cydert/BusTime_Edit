@@ -30,6 +30,7 @@ public class EditView {
 	private VBox centerBox;
 	private GridPane centerGrid;
 	private BorderPane bottomBorder;
+	private MenuItem[][] item;
 
 	private TextArea[] txArea;//"時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
 	private TextArea specialArea;
@@ -50,7 +51,7 @@ public class EditView {
 
 	public void showView() {
 		root = new BorderPane();
-		HBox topBox = new HBox();
+		VBox topBox = new VBox();
 		centerGrid = new GridPane();
 		centerBox = new VBox();
 		bottomBorder = new BorderPane();
@@ -61,20 +62,28 @@ public class EditView {
 		menu[0] = new Menu("ファイル");
 		menu[1] = new Menu("編集");
 
-		MenuItem[][] item = new MenuItem[2][5];
+		item = new MenuItem[2][4];
 		item[0][0] = new MenuItem("会社名ファイルを開く");
 		item[0][1] = new MenuItem("会社ファイル新規作成");
 		item[0][2] = new MenuItem("トップ画面に戻る");
 		item[0][3] = new MenuItem("終了");
-		item[1][0] = new MenuItem("テンプレートの作成");
-		item[1][1] = new MenuItem("テンプレートの編集");
-		item[1][2] = new MenuItem("式の作成");
-		item[1][3] = new MenuItem("式の編集");
+		item[1][0] = new MenuItem("乗り場同一設定");
+
+		for(int i=0; i<menu.length; i++){
+			for(int j=0; j<item[0].length; j++){
+				if(item[i][j] == null) continue;
+				menu[i].getItems().add(item[i][j]);
+			}
+		}
+		menuBar.getMenus().addAll(menu);
 
 		topBox.setAlignment(Pos.CENTER);
-		topBox.setSpacing(10);
 		busNameTx = new TextField();
-		topBox.getChildren().addAll(new Label("表示バス停名:"), busNameTx);
+		HBox topBH = new HBox();
+		topBH.setAlignment(Pos.CENTER);
+		topBH.setSpacing(30);
+		topBH.getChildren().addAll(new Label("表示バス停名:"), busNameTx);
+		topBox.getChildren().addAll(menuBar,topBH);
 
 		String[] listSt = { "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)" };
 		Label[] txF = new Label[listSt.length];
@@ -183,24 +192,7 @@ public class EditView {
 			gdp.add(saveFileInfoTx[i], 1, i);
 			gdpIndex++;
 			if (svi != null) { // 既に指定があれば
-				switch (i) {
-				case 0:
-					if (svi.newDay != null)
-						saveFileInfoTx[i].setText(svi.newDay);
-					break;
-				case 1:
-					if (svi.toIndex != null)
-						saveFileInfoTx[i].setText("" + svi.toIndex);
-					break;
-				case 2:
-					if (svi.toString != null)
-						saveFileInfoTx[i].setText(svi.toString);
-					break;
-				case 3:
-					if (svi.fileName != null)
-						saveFileInfoTx[i].setText(svi.fileName);
-					break;
-				}
+				setSaveInfo(i, svi);
 			}
 		}
 		saveGyouBox = new ChoiceBox<>(); // 行, A,K,S,T,N
@@ -225,6 +217,26 @@ public class EditView {
 		root.setBottom(saveBt);
 
 		stage.setScene(new Scene(root));
+	}
+	public void setSaveInfo(int i,SaveInfo svi){
+		switch (i) {
+		case 0:
+			if (svi.newDay != null)
+				saveFileInfoTx[i].setText(svi.newDay);
+			break;
+		case 1:
+			if (svi.toIndex != null)
+				saveFileInfoTx[i].setText("" + svi.toIndex);
+			break;
+		case 2:
+			if (svi.toString != null)
+				saveFileInfoTx[i].setText(svi.toString);
+			break;
+		case 3:
+			if (svi.fileName != null)
+				saveFileInfoTx[i].setText(svi.fileName);
+			break;
+		}
 	}
 
 	public Button[] getBottomButton() {
@@ -254,6 +266,17 @@ public class EditView {
 		sviTmp.youbi = saveChBox.getSelectionModel().getSelectedIndex();
 		return sviTmp;
 	}
+	public EditData getEditData(){
+		// "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
+		EditData ed = new EditData();
+		ed.hour = txArea[0].getText();
+		ed.min = txArea[1].getText();
+		ed.via = txArea[2].getText();
+		ed.end = txArea[3].getText();
+		ed.stand = txArea[4].getText();
+		ed.special = txArea[5].getText();
+		return ed;
+	}
 
 	public String[] getTextArea() {
 		// "時間[時]", "時間[分]", "経由地", "終点", "乗り場所", "(特殊運行のマーク)"
@@ -269,6 +292,9 @@ public class EditView {
 	}
 	public String getShowBusStopName(){
 		return busNameTx.getText();
+	}
+	public MenuItem[][] getMenuItem(){
+		return item;
 	}
 
 	public void closeListV() {

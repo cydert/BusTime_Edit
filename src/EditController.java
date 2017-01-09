@@ -41,6 +41,7 @@ public class EditController {
 				view.getExtButton()[1].setOnAction(ev -> changeNextBox(true));
 				view.getExtButton()[2].setOnAction(ev -> extruct());
 				view.getBottomButton()[1].setOnAction(ev -> save());
+				view.getMenuItem()[1][0].setOnAction(ev -> sameBusStopNameJP());
 			}
 			view.closeListV(); // Window閉じる
 		}
@@ -65,7 +66,18 @@ public class EditController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+	}
+	private void sameBusStopNameJP(){
+		EditData ed = view.getEditData();
+		String tmp = ed.hour;
+		int cnt = tmp.split("\n").length;
+		tmp = ed.stand.split("\n")[0];
+		ed.stand = "";
+		for(int i=0; i<cnt; i++){
+			ed.stand += tmp + "\n";
+		}
+		model.setEditData(ed);
+		view.showModelData();
 	}
 
 	private void changeNextBox(boolean right) {
