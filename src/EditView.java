@@ -67,7 +67,8 @@ public class EditView {
 		item[0][1] = new MenuItem("会社ファイル新規作成");
 		item[0][2] = new MenuItem("トップ画面に戻る");
 		item[0][3] = new MenuItem("終了");
-		item[1][0] = new MenuItem("乗り場同一設定");
+		item[1][0] = new MenuItem("バス停名と乗り場同一設定");
+		item[1][1] = new MenuItem("時刻 の入力欄から数字以外を取り外す");
 
 		for(int i=0; i<menu.length; i++){
 			for(int j=0; j<item[0].length; j++){

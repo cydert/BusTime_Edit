@@ -105,7 +105,7 @@ public class EditModel {
 			PDDocument pdf = PDDocument.load(pdfStream);
 			PDFTextStripper stripper = new PDFTextStripper();
 			String text = stripper.getText(pdf);
-
+			System.out.println(text);
 			int page = pdf.getNumberOfPages();
 			String[] textAr = text.split("\r\n");
 
@@ -133,7 +133,7 @@ public class EditModel {
 						tmp = Public.cutTwoStringSecond(tmp, " ");
 						ed.end += Public.cutTwoStringSecondL(tmp, " ")+ "\n";	//目的地
 						tmp = Public.cutTwoStringFirstL(tmp, " ");
-						tmp = tmp.replaceAll("\\) ", ")");
+						tmp = tmp.replaceAll("\\) ", "\\)");
 						tmp = tmp.replaceAll(" ", "・");
 						if(tmp == "" || tmp == " ")	tmp = "不明";
 						ed.via += tmp+"\n";	//経由地

@@ -42,6 +42,7 @@ public class EditController {
 				view.getExtButton()[2].setOnAction(ev -> extruct());
 				view.getBottomButton()[1].setOnAction(ev -> save());
 				view.getMenuItem()[1][0].setOnAction(ev -> sameBusStopNameJP());
+				view.getMenuItem()[1][1].setOnAction(ev -> removeTime());
 			}
 			view.closeListV(); // Window閉じる
 		}
@@ -71,11 +72,41 @@ public class EditController {
 		EditData ed = view.getEditData();
 		String tmp = ed.hour;
 		int cnt = tmp.split("\n").length;
-		tmp = ed.stand.split("\n")[0];
+		tmp = view.getShowBusStopName();
 		ed.stand = "";
 		for(int i=0; i<cnt; i++){
 			ed.stand += tmp + "\n";
 		}
+		model.setEditData(ed);
+		view.showModelData();
+	}
+	private void removeTime(){
+		EditData ed = view.getEditData();
+		String[] tmp = ed.hour.split("\n");
+		int cnt = tmp.length;
+		for(int i=0; i<cnt; i++){
+			while(!Public.isNumber(tmp[i])){
+				if(!Public.isNumber(tmp[i].charAt(0)+""))
+					tmp[i] = tmp[i].substring(1);
+				else{
+					tmp[i] = tmp[i].substring(0, tmp[i].length()-1);
+				}
+			}
+		}
+		ed.hour = String.join("\n", tmp);
+
+		tmp = ed.min.split("\n");
+		cnt = tmp.length;
+		for(int i=0; i<cnt; i++){
+			while(!Public.isNumber(tmp[i])){
+				if(!Public.isNumber(tmp[i].charAt(0)+""))
+					tmp[i] = tmp[i].substring(1);
+				else{
+					tmp[i] = tmp[i].substring(0, tmp[i].length()-1);
+				}
+			}
+		}
+		ed.min = String.join("\n", tmp);
 		model.setEditData(ed);
 		view.showModelData();
 	}
