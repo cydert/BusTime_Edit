@@ -93,6 +93,14 @@ public class EditModel {
 	public boolean extruct(String filePath){
 		ed = new EditData();
 		saveInfo = new SaveInfo();
+		saveInfo.gyou = Public.changeFirstGyou(Public.cutTwoStringSecondL(filePath, "\\"));
+		String tmpS =  Public.cutTwoStringFirstL(filePath, ".pdf");
+		char youbiC =tmpS.charAt(tmpS.length()-1);
+		if(youbiC == 'a') saveInfo.youbi = 0;
+		else if(youbiC == 'b') saveInfo.youbi = 1;
+		else saveInfo.youbi = 3;
+
+
 		try {
 			FileInputStream pdfStream = new FileInputStream(filePath);
 			PDDocument pdf = PDDocument.load(pdfStream);
@@ -128,9 +136,12 @@ public class EditModel {
 						ed.end += Public.cutTwoStringSecondL(tmp, " ")+ "\n";	//目的地
 						tmp = Public.cutTwoStringFirstL(tmp, " ");
 						tmp = tmp.replaceAll(" ", "・");
-						ed.via += tmp+"\n";
+						if(tmp == "" || tmp == " ")	tmp = "不明";
+						ed.via += tmp+"\n";	//経由地
 					}
 				}
+				pdf.close();
+				pdfStream.close();
 			}
 			return isRead;
 		} catch (IOException e) {

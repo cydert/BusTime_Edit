@@ -184,19 +184,19 @@ public class EditView {
 			gdpIndex++;
 			if (svi != null) { // 既に指定があれば
 				switch (i) {
-				case 1:
+				case 0:
 					if (svi.newDay != null)
 						saveFileInfoTx[i].setText(svi.newDay);
 					break;
-				case 2:
+				case 1:
 					if (svi.toIndex != null)
 						saveFileInfoTx[i].setText("" + svi.toIndex);
 					break;
-				case 3:
+				case 2:
 					if (svi.toString != null)
 						saveFileInfoTx[i].setText(svi.toString);
 					break;
-				case 4:
+				case 3:
 					if (svi.fileName != null)
 						saveFileInfoTx[i].setText(svi.fileName);
 					break;

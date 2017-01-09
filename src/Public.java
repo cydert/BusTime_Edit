@@ -54,7 +54,7 @@ public class Public {
 	}
 
 	public static String cutTwoStringSecondL(String text, String cutString) {
-		System.out.println(text+cutString);
+		System.out.println(text + cutString);
 		int tmp = text.lastIndexOf(cutString);
 		if (tmp == -1) {
 			return text;
@@ -88,4 +88,17 @@ public class Public {
 		Matcher m = p.matcher(num);
 		return m.find();
 	}
+
+	public static char changeFirstGyou(String st){
+		String[] regex = {"^[aiueo]", "^k","^s","^t","^n","^[hf]","^m","^y","^r","^w"};
+		for(int i=0; i<regex.length; i++){
+			Pattern p = Pattern.compile(regex[i]);
+			Matcher m = p.matcher(st);
+			if(m.find()){
+				return Public.gyouC[i];
+			}
+		}
+		return 0;
+	}
+
 }
